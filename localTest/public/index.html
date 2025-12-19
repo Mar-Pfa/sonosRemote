@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sonos Remote</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+            background-color: #f0f0f0;
+        }
+        .button-container {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            width: 80%;
+            max-width: 300px;
+        }
+        button {
+            padding: 20px;
+            font-size: 1.2em;
+            border: none;
+            border-radius: 8px;
+            background-color: #4CAF50;
+            color: white;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        button:active {
+            background-color: #3e8e41;
+        }
+        #status {
+            margin-top: 20px;
+            padding: 10px;
+            border-radius: 4px;
+        }
+        .success {
+            background-color: #dff0d8;
+            color: #3c763d;
+        }
+        .error {
+            background-color: #f2dede;
+            color: #a94442;
+        }
+    </style>
+</head>
+<body>
+    <div class="button-container">
+        <button onclick="controlSonos('playpause')">Play / Pause</button>
+        <button onclick="controlSonos('volumeup')">Lauter (+)</button>
+        <button onclick="controlSonos('volumedown')">Leiser (-)</button>
+    </div>
+    <div id="status"></div>
+
+    <script>
+        async function controlSonos(action) {
+            const statusDiv = document.getElementById('status');
+            try {
+                const response = await fetch(`/sonos/${action}`, {
+                    method: 'POST'
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                statusDiv.textContent = 'Erfolgreich!';
+                statusDiv.className = 'success';
+                
+                // Clear status after 2 seconds
+                setTimeout(() => {
+                    statusDiv.textContent = '';
+                    statusDiv.className = '';
+                }, 2000);
+            } catch (error) {
+                statusDiv.textContent = 'Fehler: ' + error.message;
+                statusDiv.className = 'error';
+            }
+        }
+    </script>
+</body>
+</html>
